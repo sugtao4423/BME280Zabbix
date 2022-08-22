@@ -1,0 +1,116 @@
+zabbix_export:
+  version: '6.0'
+  date: '2022-08-22T03:35:20Z'
+  groups:
+    -
+      uuid: 4b12e59c2cd94a6c8246787e51774453
+      name: 'Physical Server'
+  templates:
+    -
+      uuid: 1598c473236043fab97706f26614552d
+      template: bme280
+      name: bme280
+      groups:
+        -
+          name: 'Physical Server'
+      items:
+        -
+          uuid: 526ef5ef22de49ddad7247574db1f677
+          name: 湿度
+          type: TRAP
+          key: bme280_hum
+          delay: '0'
+          history: 180d
+          trends: 1825d
+          value_type: FLOAT
+          units: '%'
+          request_method: POST
+        -
+          uuid: a0873e6096bf4702909b2faed8df06a7
+          name: 気圧
+          type: TRAP
+          key: bme280_press
+          delay: '0'
+          history: 180d
+          trends: 1825d
+          value_type: FLOAT
+          units: '!hPa'
+          request_method: POST
+        -
+          uuid: 02a592bc9a834e1285d202a0959f2dc0
+          name: 温度
+          type: TRAP
+          key: bme280_temp
+          delay: '0'
+          history: 180d
+          trends: 1825d
+          value_type: FLOAT
+          units: ℃
+          request_method: POST
+          triggers:
+            -
+              uuid: 2c117504808d472096d2a458ea144d0a
+              expression: last(/bme280/bme280_temp)>=25
+              name: 'Temperature is over 25 degrees on {HOST.NAME}'
+              status: DISABLED
+              priority: WARNING
+  triggers:
+    -
+      uuid: f8e2a1c566ff4cfabfd38240a8793e9b
+      expression: |
+        nodata(/bme280/bme280_temp,65m)=1 or
+        nodata(/bme280/bme280_hum,65m)=1 or
+        nodata(/bme280/bme280_press,65m)=1
+      name: 'BME280 data has not been sent from {HOST.NAME} for 1 hour.'
+      priority: INFO
+  graphs:
+    -
+      uuid: c9425d613edb4794a022bbce78476109
+      name: 気圧
+      yaxismin: '950'
+      yaxismax: '1030'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: bme280
+            key: bme280_press
+    -
+      uuid: b71c5f7713264d458d50be496651f968
+      name: 温度
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: bme280
+            key: bme280_temp
+    -
+      uuid: 4febdc33272f4bc090f1218e7bcdf56b
+      name: '温度 湿度'
+      graph_items:
+        -
+          color: EE0000
+          calc_fnc: ALL
+          item:
+            host: bme280
+            key: bme280_temp
+        -
+          sortorder: '1'
+          color: 0000EE
+          yaxisside: RIGHT
+          calc_fnc: ALL
+          item:
+            host: bme280
+            key: bme280_hum
+    -
+      uuid: 36e3f6c523a7435aaed27c495fc36450
+      name: 湿度
+      graph_items:
+        -
+          color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: bme280
+            key: bme280_hum
