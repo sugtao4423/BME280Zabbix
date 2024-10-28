@@ -14,6 +14,7 @@ import (
 var (
 	i2cDev       string
 	bme280Addr   int
+	dryRun       bool
 	zbxHost      string
 	itemHostname string
 	itemTempKey  string
@@ -24,6 +25,7 @@ var (
 func main() {
 	flag.StringVarP(&i2cDev, "i2c-dev", "d", "/dev/i2c-1", "I2C device")
 	flag.IntVarP(&bme280Addr, "bme280-addr", "a", 0x76, "BME280 address")
+	flag.BoolVarP(&dryRun, "dry-run", "n", false, "Dry run")
 	flag.StringVarP(&zbxHost, "zbx-host", "z", "localhost:10051", "Zabbix host")
 	flag.StringVarP(&itemHostname, "item-hostname", "h", "localhost", "Zabbix item hostname")
 	flag.StringVarP(&itemTempKey, "item-temp-key", "T", "bme280_temp", "Zabbix item temp key")
@@ -35,6 +37,11 @@ func main() {
 	t := fmt.Sprintf("%.2f", temp)
 	p := fmt.Sprintf("%.2f", press)
 	h := fmt.Sprintf("%.2f", hum)
+
+	if dryRun {
+		fmt.Printf("temp: %s, hum: %s, press: %s\n", t, h, p)
+		return
+	}
 
 	res := retrySendZbx(t, p, h)
 	fmt.Println("send data to Zabbix")

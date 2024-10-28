@@ -6,6 +6,7 @@ short | long | description | default
 --- | --- | --- | ---
 `-d` | `--i2c-dev` | I2Cデバイス | `/dev/i2c-1`
 `-a` | `--bme280-addr` | BME280アドレス | `0x76`
+`-n` | `--dry-run` | Dry run | `false`
 `-z` | `--zbx-host` | Zabbixサーバー | `localhost:10051`
 `-h` | `--item-hostname` | Zabbixアイテムのhostname | `localhost`
 `-T` | `--item-temp-key` | Zabbixアイテムの温度Key | `bme280_temp`
